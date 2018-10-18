@@ -72,9 +72,12 @@ class SafeQThread(QtCore.QThread):
 class SafeWorker(QtCore.QObject):
     ''' a QObject that has a stop_running attribute that associated QThreads can call '''
     stop_running = StopRunning() # descriptor for the stopRunning attribute
-    def __init__(self, parent=None):
+    def __init__(self, thread, parent=None):
         super(SafeWorker, self).__init__(parent)
+        if not isinstance(thread, SafeQThread):
+            raise errors.SafeQThreadTypeError
         self.stop_running = False
+        thread.register_worker(self)
 
 
 def close_all_threads(max_wait_seconds):

@@ -24,6 +24,12 @@ class WorkerAlreadyRegisteredError(SafeQThreadsError):
         super(WorkerAlreadyRegisteredError, self).__init__("A worker has already been registered for this thread!")
 
 
+class SafeQThreadTypeError(SafeQThreadsError):
+    ''' raise where the object provided is not an instance of SafeQThread '''
+    def __init__(self):
+        super(SafeQThreadTypeError, self).__init__("The thread object provided must be an instance of SafeQThread!")
+
+
 class MaxWaitSecondsTypeError(SafeQThreadsError):
     ''' raise where '''
     def __init__(self):
