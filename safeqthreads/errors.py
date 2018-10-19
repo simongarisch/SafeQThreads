@@ -33,4 +33,4 @@ class SafeQThreadTypeError(SafeQThreadsError):
 class MaxWaitSecondsTypeError(SafeQThreadsError):
     ''' raise where '''
     def __init__(self):
-        super(MaxWaitMillisecondsTypeError, self).__init__("max_wait_seconds must be of the type int!")
+        super(MaxWaitSecondsTypeError, self).__init__("max_wait_seconds must be of the type int!")
