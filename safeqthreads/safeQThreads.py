@@ -80,7 +80,7 @@ class SafeWorker(QtCore.QObject):
         thread.register_worker(self)
 
 
-def close_all_threads(max_wait_seconds):
+def close_all_threads(max_wait_seconds=3):
     ''' wait for a certain number of seconds (max_wait_seconds) for the threads to finish '''
 
     if not isinstance(max_wait_seconds, int):

@@ -41,11 +41,12 @@ class MainWindow(QtWidgets.QMainWindow):
         # then create an instance of SafeQThread
         thread = self.thread = safeqthreads.SafeQThread()
         worker = self.worker = SomeWorker(thread, signal)
-        thread.started.connect(worker.loop)
+
         # http://pyqt.sourceforge.net/Docs/PyQt4/qobject.html#moveToThread
         worker.moveToThread(thread)
+        thread.started.connect(worker.loop)
         thread.start()
-        
+
     @QtCore.pyqtSlot(int)
     def signal_catcher(self, counter):
         self.setWindowTitle(str(counter))
@@ -56,7 +57,7 @@ def main():
     win = MainWindow()
     win.show()                       # show the window
     app.exec_()                      # enter the app mainloop
-    safeqthreads.close_all_threads()
+    #safeqthreads.close_all_threads() # <-- comment me out and see what happens
 
 
 if __name__ == "__main__":
