@@ -29,6 +29,7 @@ def runThread():
 runThread()
 ```
 ![Python crashes](https://github.com/simongarisch/safeqthreads/blob/master/crash.png)
+
 This same issue can occur when a PyQt application exits before QThreads are finished.
 
 ## Some background
