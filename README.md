@@ -3,10 +3,13 @@
 
 # safeqthreads
 
-Track and manage your QThreads
+The motivation behind safeqthreads is to allow Qthreads to finish before the application exits. If the application exits before a QThread is finished the Python garbage collector will release the QThread and potentially cause Python to crash.
 
 ## Installation
-...
+safeqthreads is both python 2 and 3 compatible
+```bash
+pip install safeqthreads
+```
 
 ## Motivation
 ...
