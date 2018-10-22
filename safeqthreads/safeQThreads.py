@@ -2,18 +2,19 @@
 defines the classes:
 -> SafeQThread (inherits from QtCore.QThread) and
 -> SafeWorker (inherits from QtCore.QObject)
+-> SafeThread (inherits from threading.Thread)
 
 Objects for each of these classes will have a stop_running attribute (bool)
 that we can set to True if we want to indicate this thread should exit early.
 
-a close_all_threads function is also provided that, when called,
-will go through all existing SafeQThread objects and:
--> set the object attribute stop_running = True
--> call thread.quit()
+a close_all_threads function is also provided that will:
+-> for all SafeQThread objects set the object attribute stop_running to True and call thread.quit()
+-> for all SafeThread objects set the object attribute stop_running to True
 -> wait for all SafeQThread objects to exit subject to a timeout of max_wait_seconds
 '''
 
 import time
+import threading
 from weakref import WeakSet
 from qtpy import QtWidgets, QtCore
 from . import errors
@@ -80,6 +81,25 @@ class SafeWorker(QtCore.QObject):
         thread.register_worker(self)
 
 
+class SafeThread(threading.Thread):
+    ''' we'll also create a standard library version which inherits from threading.Thread
+        this will also have a stop_running attribute signaling to the thread that it
+        should exit early.
+     '''
+    stop_running = StopRunning() # descriptor for the stop_running attribute
+    thread_set = WeakSet()
+    
+    def __init__(self):
+        super(SafeThread, self).__init__()
+        self.daemon = True
+        self.thread_set.add(self)
+
+    @classmethod
+    def stop_all_threads(cls):
+        for thread in cls.thread_set:
+            thread.stop_running = True
+
+
 def close_all_threads(max_wait_seconds=3):
     ''' wait for a certain number of seconds (max_wait_seconds) for the threads to finish '''
 
@@ -88,8 +108,9 @@ def close_all_threads(max_wait_seconds=3):
     
     start = time.time()
     app = QtWidgets.QApplication.instance()
-    SafeQThread.stop_all_threads() # set stop_running attribute to true for all SafeQThread instances
-    SafeQThread.quit_all_threads() # and call thread.quit for each of these threads
+    SafeThread.stop_all_threads()  # set stop_running attribute to true for all SafeThread instances
+    SafeQThread.stop_all_threads() # do the same for all SafeQThread instances
+    SafeQThread.quit_all_threads() # and call thread.quit for QThreads
     while SafeQThread.any_threads_busy():
         if app is not None:
             # http://pyqt.sourceforge.net/Docs/PyQt4/qcoreapplication.html#processEvents
@@ -97,3 +118,5 @@ def close_all_threads(max_wait_seconds=3):
         end = time.time()
         if (end - start) > max_wait_seconds:
             return
+
+

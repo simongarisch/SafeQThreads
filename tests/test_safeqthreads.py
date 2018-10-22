@@ -96,3 +96,25 @@ class TestSafeQThread(object):
 
         # now wait for this thread to finish properly
         safeqthreads.close_all_threads(max_wait_seconds=5)
+
+    def test_safethread(self):
+        ''' this tests the SafeThread class (which inherits from threading.Thread)
+            not to be confused with the SafeQThread class (which inherits from QtCore.QThread)
+        '''
+        class SomeThread(safeqthreads.SafeThread):
+            def __init__(self):
+                super(SomeThread, self).__init__()
+                self.start()
+                
+            def run(self):
+                while True:
+                    if self.stop_running:
+                        return
+                    time.sleep(0.1)
+
+        threads_list = [SomeThread() for _ in range(3)]
+        safeqthreads.close_all_threads()
+        time.sleep(1) # wait for 'if self.stop_running' to evaluate as True
+        # all of these threads in threads_list should now have their
+        # stop_running attribute set to True
+        assert False not in [thread.stop_running for thread in threads_list]
