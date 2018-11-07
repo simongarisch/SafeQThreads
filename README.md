@@ -4,7 +4,7 @@
 
 # safeqthreads
 
-The motivation behind safeqthreads is to allow Qthreads to finish before the application exits. If the application exits before a QThread is finished the Python garbage collector will release the QThread and potentially cause Python to crash.
+The motivation behind safeqthreads is to allow QThread objects to finish before the application exits. If the application exits before a QThread is finished the Python garbage collector will release the QThread and potentially cause Python to crash.
 
 ## Installation
 safeqthreads is both python 2 and 3 compatible
@@ -43,8 +43,8 @@ When working with PyQt the QThreads option gives you access to additional PyQt f
 We can create threads using the standard library by inheriting from the threading.Thread class and overriding the run method; you'll see many examples of QThread implemented in this way, but it's [not recommended](http://blog.qt.io/blog/2010/06/17/youre-doing-it-wrong/). Instead, it's suggested that a worker (which inherits from QObject) be created and moved to a thread with its [moveToThread](http://pyqt.sourceforge.net/Docs/PyQt4/qobject.html#moveToThread) method. We'll provide examples of using safeqthreads with both.
 
 ## Using safeqthreads with threads and workers
-safeqthreads.close_all_threads() is the last line that runs at the end of the main function. If you comment this line out then there is a chance that you'll get either of:
--  A warning of 'QThread: Destroyed while ethread is still running'
+safeqthreads.close_all_threads() is the last line that runs at the end of the main function. If you comment this line out then there is a chance you'll get either of:
+-  A warning saying 'QThread: Destroyed while ethread is still running'
 -  Python has stopped working (a crash)
 ```python
 import time
